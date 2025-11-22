@@ -275,7 +275,8 @@
             };
         }
 
-        // --- SPECIFIC RENDERERS ---
+        // --- SPECIFIC RENDERERS (Functions are defined below for brevity) ---
+        // ... (See full functions below) ...
 
         function renderPerformanceTask02(data, container) {
             const info = data.studentInfo || {};
@@ -673,7 +674,7 @@
             window.loadExamList();
         }
 
-        // MODIFIED FUNCTION: FILTERING EXAMS BY STUDENT SECTION
+        // CORRECTED FUNCTION: FILTERING EXAMS BY STUDENT SECTION
         window.loadExamList = async function() {
             const selector = document.getElementById('exam-selector');
             selector.innerHTML = '<option value="">Loading exams...</option>';
@@ -702,10 +703,11 @@
                 }
                 
                 querySnapshot.forEach((docSnap) => {
-                    // We still use the document ID as the collection name
+                    // Use the document ID (which is the actual collection name like results_T2_11-JUSTITIA_...) 
+                    // and the data (for friendlyName) to populate the dropdown.
                     const collectionName = docSnap.id;
-                    // The document data might contain a friendlier name, but we fall back to ID parsing
                     const data = docSnap.data();
+                    // Use friendlyName if available, otherwise parse the collection ID
                     let displayText = data.friendlyName || collectionName.replace("results_", ""); 
                     
                     const option = document.createElement('option');
@@ -716,7 +718,8 @@
 
             } catch (error) { 
                 console.error("Error loading exam list:", error);
-                selector.innerHTML = `<option value="">Error loading list: ${error.message}</option>`; 
+                // NOTE: Using a custom modal/message is preferred over alert()
+                selector.innerHTML = `<option value="">Error loading list</option>`; 
             }
         }
 
