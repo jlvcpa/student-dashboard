@@ -15,7 +15,7 @@ export function renderSpecificReport(data) {
     const now = data.timestamp ? new Date(data.timestamp).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "N/A";
     
     return `
-        <header class="text-center mb-4 pb-4 border-b-4 border-indigo-600 header-bg p-4 print:bg-white print:text-black print:border-none">
+        <header class="text-center mb-4 pb-4 border-b-4 border-indigo-600 p-4 print:bg-white print:text-black print:border-none">
             <img src="./shs-adc-logo.png" onerror="this.style.display='none'" alt="School Logo" class="mx-auto mb-2 h-20 w-auto"/>
             <p class="text-sm mt-1">SY 2025-2026 | 2nd Semester</p>
             <h1 class="text-3xl font-extrabold text-yellow-300 print:text-black">T2 Performance Task 02 Results</h1>
