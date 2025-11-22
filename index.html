@@ -674,7 +674,7 @@
             window.loadExamList();
         }
 
-        // CORRECTED FUNCTION: FILTERING EXAMS BY STUDENT SECTION
+        // REVISED FUNCTION: Implement client-side filtering based on collection name structure
         window.loadExamList = async function() {
             const selector = document.getElementById('exam-selector');
             selector.innerHTML = '<option value="">Loading exams...</option>';
@@ -685,34 +685,49 @@
             }
 
             try {
-                // Construct the query to filter the 'results_list' collection
-                // This assumes each document in 'results_list' has a 'targetSection' field
-                // that matches the student's 'currentUser.section'.
-                const q = query(
-                    collection(db, "results_list"),
-                    where("targetSection", "==", currentUser.section)
-                );
-
-                const querySnapshot = await getDocs(q);
+                // Fetch ALL documents in results_list (containing the collection names/metadata)
+                const querySnapshot = await getDocs(collection(db, "results_list"));
                 
                 selector.innerHTML = '<option value="">-- Select Exam Session --</option>';
                 
                 if (querySnapshot.empty) { 
-                    selector.innerHTML = '<option value="">No activities found for your section.</option>'; 
+                    selector.innerHTML = '<option value="">No activities found.</option>'; 
                     return; 
                 }
-                
+
+                const studentSection = currentUser.section;
+                // Create a robust filter string to find the section name surrounded by underscores
+                // Example: if studentSection is '11-JUSTITIA', the filter looks for '_11-JUSTITIA_'
+                const filterPattern = `_${studentSection}_`;
+
+                let filteredExams = [];
+
                 querySnapshot.forEach((docSnap) => {
-                    // Use the document ID (which is the actual collection name like results_T2_11-JUSTITIA_...) 
-                    // and the data (for friendlyName) to populate the dropdown.
                     const collectionName = docSnap.id;
-                    const data = docSnap.data();
-                    // Use friendlyName if available, otherwise parse the collection ID
-                    let displayText = data.friendlyName || collectionName.replace("results_", ""); 
                     
+                    // Client-side filtering check against the document ID (collection name)
+                    if (collectionName.includes(filterPattern)) {
+                        const data = docSnap.data();
+                        // Use friendlyName if available in metadata, otherwise parse the collection ID
+                        let displayText = data.friendlyName || collectionName.replace("results_", ""); 
+                        
+                        filteredExams.push({
+                            value: collectionName,
+                            text: displayText
+                        });
+                    }
+                });
+
+                if (filteredExams.length === 0) {
+                    selector.innerHTML = '<option value="">No activities found for your section.</option>'; 
+                    return;
+                }
+
+                // Populate the selector with filtered results
+                filteredExams.forEach(exam => {
                     const option = document.createElement('option');
-                    option.value = collectionName; 
-                    option.text = displayText;
+                    option.value = exam.value; 
+                    option.text = exam.text;
                     selector.appendChild(option);
                 });
 
