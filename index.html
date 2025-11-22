@@ -190,12 +190,18 @@
 
                     <!-- Actual Report Container -->
                     <div id="report-container" class="hidden bg-white shadow-2xl mx-auto max-w-5xl min-h-[800px] mb-10">
-                        <!-- Toolbar -->
+                        <!-- Toolbar - UPDATED WITH ORIENTATION SELECTOR -->
                         <div class="bg-gray-800 text-white p-2 flex justify-between items-center print:hidden">
                             <span class="text-sm font-mono ml-2 truncate max-w-[300px]" id="report-id-display">Report ID: --</span>
-                            <button onclick="downloadCurrentPDF()" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded flex items-center gap-2">
-                                <i class="fas fa-download"></i> Download PDF
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <select id="pdf-orientation" class="bg-gray-700 text-white text-xs px-2 py-1 rounded">
+                                    <option value="portrait">Portrait (8.5x13)</option>
+                                    <option value="landscape">Landscape (13x8.5)</option>
+                                </select>
+                                <button onclick="downloadCurrentPDF()" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 rounded flex items-center gap-2">
+                                    <i class="fas fa-download"></i> Download PDF
+                                </button>
+                            </div>
                         </div>
                         <!-- HTML Content injected here by reportEngine.js -->
                         <div id="print-content" class="print-layout report-font"></div>
@@ -352,11 +358,23 @@
         window.downloadCurrentPDF = function() {
             if(!currentUser) return;
             const element = document.getElementById('print-content');
+            const orientation = document.getElementById('pdf-orientation').value; // 'portrait' or 'landscape'
             const filename = `Result_${currentUser.lastName}_${currentUser.cn}.pdf`;
+            
+            let formatDimensions = [8.5, 13]; // Default Portrait (Long/Legal)
+            let pdfOrientation = 'portrait';
+
+            if (orientation === 'landscape') {
+                 // Swap width (8.5 -> 13) and height (13 -> 8.5) for landscape Legal/Long size
+                 formatDimensions = [13, 8.5]; 
+                 pdfOrientation = 'landscape';
+            } 
+
             const opt = {
                 margin: 0.5, filename: filename, image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'in', format: [8.5, 13], orientation: 'portrait' }
+                // Use dynamic format dimensions and orientation
+                jsPDF: { unit: 'in', format: formatDimensions, orientation: pdfOrientation } 
             };
             html2pdf().set(opt).from(element).save();
         }
