@@ -7,8 +7,8 @@
 
 // 1. REPORT REGISTRY (Maps collection key to the module file path)
 const reportMap = {
-    "T2 Performance Task 02": "./reports/T2PerformanceTask02.js",
-    "Summative Test 01": "./reports/SummativeTest01.js",
+    "T2 Performance Task 02": "./reports/t2PerformanceTask02.js",
+    "T2 Summative Test 01": "./reports/t2SummativeTest01.js",
     // To add a new report (e.g., Activity 03), add its path here:
     // "Activity 03": "./reports/Activity03.js",
 };
